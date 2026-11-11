@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>SHOPWISE — Shop smarter</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#0b1220;--panel:#121d30;--panel2:#19263b;--line:#293950;--text:#f4f7fb;--muted:#aab7c9;--green:#69e0a3;--blue:#8ebcff;--gold:#ffd27a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#1c3654 0,transparent 35%),var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:92px}
+.wrap{max-width:960px;margin:auto;padding:22px 16px 50px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.brand{font-size:1.35rem;font-weight:900;letter-spacing:.08em}.brand span{color:var(--green)}.tag{font-size:.75rem;color:var(--green);border:1px solid #31684f;padding:5px 9px;border-radius:99px}
+h1{font-size:clamp(1.9rem,7vw,3.2rem);line-height:1.04;margin:12px 0}.sub{color:var(--muted);max-width:620px;margin:0 0 18px}
+.searchbox,.panel{background:rgba(18,29,48,.94);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 12px 40px #0003}
+label{display:block;color:var(--muted);font-size:.8rem;margin:0 0 6px}input,select{width:100%;background:#0c1626;color:var(--text);border:1px solid #34465f;border-radius:11px;padding:13px;font:inherit;min-width:0}input:focus,select:focus{outline:2px solid var(--blue);border-color:transparent}.searchrow{display:grid;grid-template-columns:1fr auto;gap:10px}.btn{border:0;border-radius:11px;padding:12px 18px;background:var(--green);color:#062315;font-weight:800;font:inherit;cursor:pointer}.btn:active{transform:scale(.98)}.btn.small{padding:8px 12px;font-size:.85rem}.btn.ghost{background:#26364d;color:var(--blue)}.btn.warnbtn{background:#49391d;color:var(--gold)}.btn:disabled{opacity:.5}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:13px}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 2px 12px}.sectionhead h2{font-size:1.15rem;margin:0}.hint{color:var(--muted);font-size:.8rem}.results{display:grid;gap:12px}
+.item{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px;display:grid;grid-template-columns:1fr auto;gap:12px}.store{font-weight:800}.meta{color:var(--muted);font-size:.84rem;margin-top:4px}.price{font-size:1.55rem;font-weight:900;text-align:right}.total{font-size:1.3rem;font-weight:900;text-align:right;color:var(--green)}
+.pill{display:inline-block;margin-top:8px;padding:4px 8px;border-radius:99px;background:#26364d;color:var(--blue);font-size:.72rem}.pill.good{background:#163b2b;color:var(--green)}.pill.warn{background:#49391d;color:var(--gold)}.pill.sample{background:#26364d;color:var(--gold)}
+.best{border-color:#4a9e75;box-shadow:inset 3px 0 var(--green)}.bestlabel{font-size:.7rem;color:var(--green);font-weight:800;letter-spacing:.08em}.hitlabel{font-size:.7rem;color:#062315;background:var(--green);font-weight:800;letter-spacing:.08em;padding:3px 8px;border-radius:99px;display:inline-block}
+.small{font-size:.78rem;color:var(--muted)}.empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px}.footer{margin-top:24px;color:var(--muted);font-size:.76rem}.disclaimer{border-left:3px solid var(--gold);padding:10px 12px;background:#2a2418;color:#e9d9b6;border-radius:6px;font-size:.82rem;margin:16px 0}
+.grouphead{margin:22px 2px 4px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}.grouphead h3{margin:0;font-size:1.05rem}.cat{color:var(--blue);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}
+.breakdown{font-size:.8rem;color:var(--muted);text-align:right;line-height:1.5}.breakdown b{color:var(--text)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tab{display:none}.tab.active{display:block}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}.stat .num{font-size:1.5rem;font-weight:900;color:var(--green)}.stat .lbl{color:var(--muted);font-size:.75rem}
+.storegroup{margin-top:18px}.storegroup h3{margin:0 0 8px}.rowline{display:flex;justify-content:space-between;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:8px;align-items:center}
+.formgrid{display:grid;gap:12px}.checkrow{display:flex;align-items:center;gap:10px;padding:8px 0}.checkrow input{width:auto}
+input[type=range]{padding:0}
+.bottomnav{position:fixed;left:0;right:0;bottom:0;background:rgba(13,22,38,.97);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:20}
+.bottomnav button{background:none;border:0;color:var(--muted);font:inherit;font-size:.72rem;padding:10px 2px 14px;cursor:pointer}.bottomnav button .ico{display:block;font-size:1.25rem;margin-bottom:2px}.bottomnav button.active{color:var(--green)}
+a{color:var(--blue)}
+@media(max-width:560px){.searchrow{grid-template-columns:1fr}.filters{grid-template-columns:1fr}.item{grid-template-columns:1fr}.price,.total,.breakdown{text-align:left}.top{align-items:flex-start}.statgrid{grid-template-columns:1fr 1fr 1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="top"><div class="brand">SHOP<span>WISE</span></div><div class="tag">SAMPLE DATA DEMO</div></header>
+
+  <!-- ============ TAB: COMPARE ============ -->
+  <section class="tab active" id="tab-compare">
+    <h1>Find the best deal.<br><span style="color:var(--green)">Not just the lowest price.</span></h1>
+    <p class="sub">Search once to compare the same product across stores by real total cost — price + shipping + trip cost — plus stock and distance.</p>
+    <div class="disclaimer"><strong>Important — sample data:</strong> Every price and stock count in this version is clearly labeled <strong>sample data</strong>. SHOPWISE does not yet connect to retailer systems, verify live prices, or confirm real inventory. Those integrations come next.</div>
+
+    <section class="searchbox" aria-label="Product search">
+      <label for="query">WHAT ARE YOU LOOKING FOR?</label>
+      <div class="searchrow"><input id="query" placeholder="Try: headphones, drill, coffee maker, gaming…" autocomplete="off"><button class="btn" id="searchBtn">Compare deals</button></div>
+      <div class="filters">
+        <div><label for="zip">YOUR ZIP CODE (distance reference)</label><input id="zip" inputmode="numeric" maxlength="10" placeholder="e.g. 08232"></div>
+        <div><label for="sort">RANK RESULTS BY</label><select id="sort"><option value="best">Best overall value</option><option value="total">Lowest total cost</option><option value="distance">Closest store</option><option value="stock">Most stock</option></select></div>
+      </div>
+      <p class="small" style="margin:12px 0 0">Total cost = price + shipping + trip. Trip = distance × your cost per mile (set in Settings, default $0.18/mi, round-trip estimate). Best value also gives a small bonus for healthy stock.</p>
+    </section>
+
+    <div class="sectionhead"><h2 id="resultTitle">All sample deals</h2><span class="hint" id="count">Sample inventory</span></div>
+    <section class="results" id="results" aria-live="polite"></section>
+  </section>
+
+  <!-- ============ TAB: MY LIST ============ -->
+  <section class="tab" id="tab-list">
+    <div class="sectionhead"><h2>My List</h2><span class="hint">Grouped by store</span></div>
+    <div id="listBody"></div>
+    <div class="actions" style="margin-top:14px"><button class="btn warnbtn small" id="clearListBtn">Clear list</button></div>
+  </section>
+
+  <!-- ============ TAB: WATCH ============ -->
+  <section class="tab" id="tab-watch">
+    <div class="sectionhead"><h2>Watch</h2><span class="hint">Target prices on sample data</span></div>
+    <section class="panel formgrid">
+      <div><label for="watchProduct">PRODUCT</label><select id="watchProduct"></select></div>
+      <div><label for="watchTarget">TARGET TOTAL PRICE ($)</label><input id="watchTarget" type="number" min="0" step="0.01" placeholder="e.g. 60.00"></div>
+      <button class="btn" id="addWatchBtn">Add watch</button>
+      <p class="small" style="margin:0">A watch shows HIT when the best sample total for that product is at or under your target.</p>
+    </section>
+    <div id="watchBody" style="margin-top:16px"></div>
+  </section>
+
+  <!-- ============ TAB: SAVINGS ============ -->
+  <section class="tab" id="tab-savings">
+    <div class="sectionhead"><h2>Savings</h2><span class="hint">Your logged purchases only</span></div>
+    <div class="statgrid">
+      <div class="stat"><div class="num" id="statCount">0</div><div class="lbl">PURCHASES</div></div>
+      <div class="stat"><div class="num" id="statSpent">$0.00</div><div class="lbl">TOTAL SPENT</div></div>
+      <div class="stat"><div class="num" id="statSaved">$0.00</div><div class="lbl">TOTAL SAVED*</div></div>
+    </div>
+    <p class="small">*Saved = highest sample total for that product − what you paid, never below $0. Real numbers from your own entries only.</p>
+    <section class="panel formgrid">
+      <div><label for="buyName">PRODUCT (type it, or use “Bought it” on a deal)</label><input id="buyName" placeholder="e.g. Wireless Headphones"></div>
+      <div><label for="buyStore">STORE</label><input id="buyStore" placeholder="e.g. Walmart"></div>
+      <div><label for="buyPaid">TOTAL PRICE PAID ($)</label><input id="buyPaid" type="number" min="0" step="0.01" placeholder="e.g. 69.86"></div>
+      <button class="btn" id="addBuyBtn">Log purchase</button>
+    </section>
+    <div id="savingsBody" style="margin-top:16px"></div>
+  </section>
+
+  <!-- ============ TAB: SETTINGS & SUPPORT ============ -->
+  <section class="tab" id="tab-settings">
+    <div class="sectionhead"><h2>Settings &amp; Support</h2></div>
+    <section class="panel formgrid">
+      <div><label for="setZip">YOUR ZIP CODE</label><input id="setZip" inputmode="numeric" maxlength="10"></div>
+      <div><label for="setCpm">COST PER MILE — <span id="cpmVal">$0.18</span>/mi (trip estimate)</label>
+        <input id="setCpm" type="range" min="0" max="0.60" step="0.01">
+        <input id="setCpmNum" type="number" min="0" max="2" step="0.01" style="margin-top:8px"></div>
+      <div><label>PREFERRED STORES (Compare only shows these)</label><div id="storeChecks"></div></div>
+      <button class="btn warnbtn" id="resetBtn">Reset all ShopWise data</button>
+    </section>
+    <section class="panel" style="margin-top:16px">
+      <h3 style="margin-top:0">Support</h3>
+      <p>Questions or problems? Email <a href="mailto:seanmanley171@gmail.com">seanmanley171@gmail.com</a></p>
+      <p><a href="privacy.html">Privacy Policy</a></p>
+      <h3>About SHOPWISE</h3>
+      <p class="small">SHOPWISE — Find the best deal. Not just the lowest price. Shop smarter. Spend less. Waste nothing.</p>
+      <p class="small">This version runs fully on your device. Your list, watches, purchases and settings are stored only in this browser (localStorage). All prices and stock shown are <strong>sample data</strong> for demonstrating how the comparison works — they are not live retailer prices. A future version will connect to real retailer data sources.</p>
+    </section>
+  </section>
+
+  <p class="footer">SHOPWISE • Shop smarter. Spend less. Waste nothing.</p>
+</main>
+
+<nav class="bottomnav" aria-label="Main">
+  <button data-nav="compare" class="active"><span class="ico">🔍</span>Compare</button>
+  <button data-nav="list"><span class="ico">🛒</span>List</button>
+  <button data-nav="watch"><span class="ico">👀</span>Watch</button>
+  <button data-nav="savings"><span class="ico">💰</span>Savings</button>
+  <button data-nav="settings"><span class="ico">⚙️</span>Settings</button>
+</nav>
+
+<script>
+"use strict";
+/* =====================================================================
+   SHOPWISE data layer — ADAPTER SEAM
+   ---------------------------------------------------------------------
+   CATALOG below is SAMPLE / DEMO data only. It is NOT live retailer
+   data: prices, stock, distances and shipping are hand-written examples.
+   A live version replaces this block with retailer-specific adapter
+   functions (one per retailer) that return the same shape:
+     { id, name, category, offers: [{ store, price, stock, ship }] }
+   plus a fetched-at timestamp per offer for inventory confidence.
+   Everything above this seam (UI, scoring, list, watch, savings)
+   must keep working unchanged when live adapters land.
+   ===================================================================== */
+const SAMPLE_TS = "Sample · Nov 9, 2026";
+const STORE_META = {
+  "Walmart":       { "distance": 4.8, "kind": "In-store" },
+  "Target":        { "distance": 3.1, "kind": "In-store" },
+  "Amazon":        { "distance": null, "kind": "Online" },
+  "Best Buy":      { "distance": 2.4, "kind": "In-store" },
+  "Home Depot":    { "distance": 5.2, "kind": "In-store" },
+  "Lowe's":        { "distance": 3.6, "kind": "In-store" },
+  "Dollar General":{ "distance": 1.2, "kind": "In-store" },
+  "CVS":           { "distance": 1.8, "kind": "In-store" }
+};
+const CATALOG = [
+  { "id": "wireless-headphones", "name": "Wireless Headphones", "category": "Tech", "offers": [
+    { "store": "Best Buy", "price": 79.99, "stock": 8, "ship": 0 },
+    { "store": "Walmart", "price": 69.00, "stock": 3, "ship": 0 },
+    { "store": "Target", "price": 74.99, "stock": 12, "ship": 0 },
+    { "store": "Amazon", "price": 64.99, "stock": null, "ship": 5.99 } ] },
+  { "id": "bluetooth-speaker", "name": "Bluetooth Speaker", "category": "Tech", "offers": [
+    { "store": "Walmart", "price": 34.88, "stock": 6, "ship": 0 },
+    { "store": "Target", "price": 39.99, "stock": 4, "ship": 0 },
+    { "store": "Best Buy", "price": 44.99, "stock": 9, "ship": 0 },
+    { "store": "Amazon", "price": 32.99, "stock": null, "ship": 0 } ] },
+  { "id": "usb-c-fast-charger", "name": "65W USB-C Fast Charger", "category": "Tech", "offers": [
+    { "store": "Best Buy", "price": 29.99, "stock": 11, "ship": 0 },
+    { "store": "Walmart", "price": 19.97, "stock": 7, "ship": 0 },
+    { "store": "Amazon", "price": 17.99, "stock": null, "ship": 5.99 },
+    { "store": "Target", "price": 24.99, "stock": 5, "ship": 0 } ] },
+  { "id": "wireless-mouse", "name": "Wireless Mouse", "category": "Tech", "offers": [
+    { "store": "Walmart", "price": 14.97, "stock": 13, "ship": 0 },
+    { "store": "Best Buy", "price": 19.99, "stock": 6, "ship": 0 },
+    { "store": "Amazon", "price": 12.99, "stock": null, "ship": 0 },
+    { "store": "Target", "price": 16.99, "stock": 8, "ship": 0 } ] },
+  { "id": "streaming-stick-4k", "name": "4K Streaming Stick", "category": "Tech", "offers": [
+    { "store": "Best Buy", "price": 49.99, "stock": 10, "ship": 0 },
+    { "store": "Walmart", "price": 39.00, "stock": 4, "ship": 0 },
+    { "store": "Amazon", "price": 34.99, "stock": null, "ship": 0 },
+    { "store": "Target", "price": 44.99, "stock": 3, "ship": 0 } ] },
+  { "id": "power-bank", "name": "10000mAh Power Bank", "category": "Tech", "offers": [
+    { "store": "Walmart", "price": 16.88, "stock": 9, "ship": 0 },
+    { "store": "Amazon", "price": 15.99, "stock": null, "ship": 5.99 },
+    { "store": "CVS", "price": 22.99, "stock": 4, "ship": 0 },
+    { "store": "Target", "price": 19.99, "stock": 7, "ship": 0 } ] },
+  { "id": "cordless-drill", "name": "Cordless Drill", "category": "Tools", "offers": [
+    { "store": "Home Depot", "price": 89.00, "stock": 6, "ship": 0 },
+    { "store": "Lowe's", "price": 99.00, "stock": 14, "ship": 0 },
+    { "store": "Amazon", "price": 84.50, "stock": null, "ship": 0 },
+    { "store": "Walmart", "price": 79.88, "stock": 2, "ship": 0 } ] },
+  { "id": "tape-measure", "name": "Tape Measure 25 ft", "category": "Tools", "offers": [
+    { "store": "Home Depot", "price": 12.97, "stock": 20, "ship": 0 },
+    { "store": "Lowe's", "price": 13.98, "stock": 15, "ship": 0 },
+    { "store": "Walmart", "price": 9.88, "stock": 11, "ship": 0 },
+    { "store": "Amazon", "price": 11.49, "stock": null, "ship": 5.99 } ] },
+  { "id": "screwdriver-set", "name": "Screwdriver Set 12-Piece", "category": "Tools", "offers": [
+    { "store": "Lowe's", "price": 24.98, "stock": 8, "ship": 0 },
+    { "store": "Home Depot", "price": 27.97, "stock": 5, "ship": 0 },
+    { "store": "Walmart", "price": 19.97, "stock": 12, "ship": 0 },
+    { "store": "Dollar General", "price": 12.00, "stock": 3, "ship": 0 } ] },
+  { "id": "work-gloves", "name": "Work Gloves (Large)", "category": "Tools", "offers": [
+    { "store": "Home Depot", "price": 14.97, "stock": 16, "ship": 0 },
+    { "store": "Walmart", "price": 9.97, "stock": 9, "ship": 0 },
+    { "store": "Lowe's", "price": 15.48, "stock": 7, "ship": 0 },
+    { "store": "Dollar General", "price": 6.50, "stock": 5, "ship": 0 } ] },
+  { "id": "stud-finder", "name": "Electronic Stud Finder", "category": "Tools", "offers": [
+    { "store": "Home Depot", "price": 34.97, "stock": 4, "ship": 0 },
+    { "store": "Lowe's", "price": 32.98, "stock": 6, "ship": 0 },
+    { "store": "Amazon", "price": 29.99, "stock": null, "ship": 0 },
+    { "store": "Walmart", "price": 28.88, "stock": 2, "ship": 0 } ] },
+  { "id": "led-work-light", "name": "LED Work Light", "category": "Tools", "offers": [
+    { "store": "Lowe's", "price": 39.98, "stock": 7, "ship": 0 },
+    { "store": "Home Depot", "price": 44.97, "stock": 9, "ship": 0 },
+    { "store": "Walmart", "price": 34.97, "stock": 6, "ship": 0 },
+    { "store": "Amazon", "price": 37.99, "stock": null, "ship": 0 } ] },
+  { "id": "led-bulbs", "name": "LED Light Bulbs 4-Pack", "category": "Home", "offers": [
+    { "store": "Walmart", "price": 8.94, "stock": 22, "ship": 0 },
+    { "store": "Home Depot", "price": 10.97, "stock": 18, "ship": 0 },
+    { "store": "Dollar General", "price": 6.00, "stock": 10, "ship": 0 },
+    { "store": "Amazon", "price": 9.99, "stock": null, "ship": 0 } ] },
+  { "id": "storage-bins", "name": "Storage Bins 4-Pack (18 gal)", "category": "Home", "offers": [
+    { "store": "Walmart", "price": 24.98, "stock": 8, "ship": 0 },
+    { "store": "Target", "price": 29.99, "stock": 5, "ship": 0 },
+    { "store": "Lowe's", "price": 27.98, "stock": 11, "ship": 0 },
+    { "store": "Dollar General", "price": 18.00, "stock": 4, "ship": 0 } ] },
+  { "id": "handheld-vacuum", "name": "Cordless Handheld Vacuum", "category": "Home", "offers": [
+    { "store": "Target", "price": 59.99, "stock": 3, "ship": 0 },
+    { "store": "Walmart", "price": 49.88, "stock": 6, "ship": 0 },
+    { "store": "Amazon", "price": 44.99, "stock": null, "ship": 0 },
+    { "store": "Best Buy", "price": 64.99, "stock": 5, "ship": 0 } ] },
+  { "id": "smart-plug", "name": "Smart Plug 2-Pack", "category": "Home", "offers": [
+    { "store": "Best Buy", "price": 24.99, "stock": 12, "ship": 0 },
+    { "store": "Walmart", "price": 18.97, "stock": 9, "ship": 0 },
+    { "store": "Amazon", "price": 16.99, "stock": null, "ship": 0 },
+    { "store": "Target", "price": 22.99, "stock": 7, "ship": 0 } ] },
+  { "id": "shower-head", "name": "High-Pressure Shower Head", "category": "Home", "offers": [
+    { "store": "Home Depot", "price": 29.98, "stock": 10, "ship": 0 },
+    { "store": "Lowe's", "price": 27.98, "stock": 8, "ship": 0 },
+    { "store": "Walmart", "price": 19.97, "stock": 6, "ship": 0 },
+    { "store": "Amazon", "price": 22.99, "stock": null, "ship": 5.99 } ] },
+  { "id": "throw-blanket", "name": "Fleece Throw Blanket", "category": "Home", "offers": [
+    { "store": "Target", "price": 15.00, "stock": 14, "ship": 0 },
+    { "store": "Walmart", "price": 12.88, "stock": 18, "ship": 0 },
+    { "store": "Dollar General", "price": 8.00, "stock": 6, "ship": 0 },
+    { "store": "Amazon", "price": 17.99, "stock": null, "ship": 0 } ] },
+  { "id": "coffee-maker", "name": "Coffee Maker", "category": "Kitchen", "offers": [
+    { "store": "Walmart", "price": 39.98, "stock": 5, "ship": 0 },
+    { "store": "Target", "price": 34.99, "stock": 2, "ship": 0 },
+    { "store": "Amazon", "price": 31.49, "stock": null, "ship": 0 } ] },
+  { "id": "air-fryer", "name": "Air Fryer 4-Quart", "category": "Kitchen", "offers": [
+    { "store": "Walmart", "price": 69.00, "stock": 7, "ship": 0 },
+    { "store": "Target", "price": 79.99, "stock": 4, "ship": 0 },
+    { "store": "Amazon", "price": 64.99, "stock": null, "ship": 0 },
+    { "store": "Best Buy", "price": 89.99, "stock": 6, "ship": 0 } ] },
+  { "id": "toaster", "name": "2-Slice Toaster", "category": "Kitchen", "offers": [
+    { "store": "Target", "price": 24.99, "stock": 9, "ship": 0 },
+    { "store": "Walmart", "price": 19.88, "stock": 13, "ship": 0 },
+    { "store": "Dollar General", "price": 15.00, "stock": 3, "ship": 0 },
+    { "store": "Amazon", "price": 22.99, "stock": null, "ship": 5.99 } ] },
+  { "id": "knife-set", "name": "Knife Set 6-Piece", "category": "Kitchen", "offers": [
+    { "store": "Walmart", "price": 29.97, "stock": 6, "ship": 0 },
+    { "store": "Target", "price": 34.99, "stock": 8, "ship": 0 },
+    { "store": "Amazon", "price": 27.99, "stock": null, "ship": 0 } ] },
+  { "id": "cutting-boards", "name": "Cutting Board Set 3-Piece", "category": "Kitchen", "offers": [
+    { "store": "Dollar General", "price": 7.00, "stock": 11, "ship": 0 },
+    { "store": "Walmart", "price": 12.97, "stock": 9, "ship": 0 },
+    { "store": "Target", "price": 14.99, "stock": 5, "ship": 0 },
+    { "store": "Amazon", "price": 13.99, "stock": null, "ship": 5.99 } ] },
+  { "id": "electric-kettle", "name": "Electric Kettle 1.7L", "category": "Kitchen", "offers": [
+    { "store": "Amazon", "price": 23.99, "stock": null, "ship": 0 },
+    { "store": "Target", "price": 27.99, "stock": 6, "ship": 0 },
+    { "store": "Walmart", "price": 25.88, "stock": 4, "ship": 0 },
+    { "store": "CVS", "price": 32.99, "stock": 2, "ship": 0 } ] },
+  { "id": "wireless-controller", "name": "Wireless Game Controller", "category": "Gaming", "offers": [
+    { "store": "Best Buy", "price": 64.99, "stock": 9, "ship": 0 },
+    { "store": "Walmart", "price": 59.00, "stock": 5, "ship": 0 },
+    { "store": "Amazon", "price": 54.99, "stock": null, "ship": 0 },
+    { "store": "Target", "price": 62.99, "stock": 7, "ship": 0 } ] },
+  { "id": "gaming-headset", "name": "Gaming Headset", "category": "Gaming", "offers": [
+    { "store": "Best Buy", "price": 49.99, "stock": 8, "ship": 0 },
+    { "store": "Amazon", "price": 39.99, "stock": null, "ship": 0 },
+    { "store": "Walmart", "price": 44.97, "stock": 3, "ship": 0 },
+    { "store": "Target", "price": 47.99, "stock": 6, "ship": 0 } ] },
+  { "id": "gaming-keyboard", "name": "Gaming Keyboard", "category": "Gaming", "offers": [
+    { "store": "Best Buy", "price": 59.99, "stock": 11, "ship": 0 },
+    { "store": "Amazon", "price": 49.99, "stock": null, "ship": 5.99 },
+    { "store": "Walmart", "price": 54.97, "stock": 4, "ship": 0 } ] },
+  { "id": "led-strip-lights", "name": "LED Strip Lights 16 ft", "category": "Gaming", "offers": [
+    { "store": "Amazon", "price": 12.99, "stock": null, "ship": 0 },
+    { "store": "Walmart", "price": 14.97, "stock": 15, "ship": 0 },
+    { "store": "Dollar General", "price": 9.00, "stock": 7, "ship": 0 },
+    { "store": "Target", "price": 16.99, "stock": 9, "ship": 0 } ] },
+  { "id": "hdmi-cable", "name": "HDMI Cable 10 ft (2.1)", "category": "Gaming", "offers": [
+    { "store": "Best Buy", "price": 19.99, "stock": 20, "ship": 0 },
+    { "store": "Walmart", "price": 12.88, "stock": 14, "ship": 0 },
+    { "store": "Amazon", "price": 9.99, "stock": null, "ship": 5.99 },
+    { "store": "Dollar General", "price": 8.00, "stock": 5, "ship": 0 } ] },
+  { "id": "charging-dock", "name": "Controller Charging Dock", "category": "Gaming", "offers": [
+    { "store": "Amazon", "price": 19.99, "stock": null, "ship": 0 },
+    { "store": "Best Buy", "price": 24.99, "stock": 7, "ship": 0 },
+    { "store": "Target", "price": 22.99, "stock": 4, "ship": 0 },
+    { "store": "Walmart", "price": 21.97, "stock": 6, "ship": 0 } ] },
+  { "id": "paper-towels", "name": "Paper Towels 6 Rolls", "category": "Everyday", "offers": [
+    { "store": "Walmart", "price": 9.48, "stock": 25, "ship": 0 },
+    { "store": "Dollar General", "price": 7.50, "stock": 18, "ship": 0 },
+    { "store": "CVS", "price": 11.99, "stock": 8, "ship": 0 },
+    { "store": "Target", "price": 10.99, "stock": 12, "ship": 0 } ] },
+  { "id": "laundry-detergent", "name": "Laundry Detergent 100 oz", "category": "Everyday", "offers": [
+    { "store": "Walmart", "price": 13.97, "stock": 16, "ship": 0 },
+    { "store": "Target", "price": 15.99, "stock": 10, "ship": 0 },
+    { "store": "Dollar General", "price": 11.00, "stock": 7, "ship": 0 },
+    { "store": "CVS", "price": 16.49, "stock": 5, "ship": 0 } ] },
+  { "id": "dish-soap", "name": "Dish Soap 3-Pack", "category": "Everyday", "offers": [
+    { "store": "Dollar General", "price": 4.50, "stock": 20, "ship": 0 },
+    { "store": "Walmart", "price": 6.97, "stock": 14, "ship": 0 },
+    { "store": "CVS", "price": 7.99, "stock": 9, "ship": 0 } ] },
+  { "id": "disinfecting-wipes", "name": "Disinfecting Wipes 75 ct", "category": "Everyday", "offers": [
+    { "store": "CVS", "price": 8.49, "stock": 13, "ship": 0 },
+    { "store": "Walmart", "price": 7.48, "stock": 19, "ship": 0 },
+    { "store": "Target", "price": 8.99, "stock": 11, "ship": 0 },
+    { "store": "Dollar General", "price": 6.00, "stock": 8, "ship": 0 } ] },
+  { "id": "toothpaste", "name": "Toothpaste 2-Pack", "category": "Everyday", "offers": [
+    { "store": "CVS", "price": 7.29, "stock": 15, "ship": 0 },
+    { "store": "Walmart", "price": 5.97, "stock": 21, "ship": 0 },
+    { "store": "Dollar General", "price": 4.25, "stock": 10, "ship": 0 },
+    { "store": "Target", "price": 6.49, "stock": 12, "ship": 0 } ] },
+  { "id": "shampoo-set", "name": "Shampoo & Conditioner Set", "category": "Everyday", "offers": [
+    { "store": "Target", "price": 11.99, "stock": 9, "ship": 0 },
+    { "store": "CVS", "price": 12.99, "stock": 7, "ship": 0 },
+    { "store": "Walmart", "price": 9.97, "stock": 13, "ship": 0 },
+    { "store": "Amazon", "price": 10.99, "stock": null, "ship": 5.99 } ] }
+];
+/* ===================== end of sample data layer ===================== */
+
+const $ = id => document.getElementById(id);
+const LS = { settings: "shopwise_settings", list: "shopwise_list", watch: "shopwise_watch", savings: "shopwise_savings" };
+function loadJSON(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
+function saveJSON(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+const allStoreNames = Object.keys(STORE_META);
+let settings = Object.assign({ zip: "08232", cpm: 0.18, stores: allStoreNames.slice() }, loadJSON(LS.settings, {}));
+if (!Array.isArray(settings.stores) || !settings.stores.length) settings.stores = allStoreNames.slice();
+let myList = loadJSON(LS.list, []);
+let watchList = loadJSON(LS.watch, []);
+let savings = loadJSON(LS.savings, []);
+
+function money(n) { return "$" + Number(n).toFixed(2); }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function tripCost(distance) { return distance === null || distance === undefined ? 0 : distance * settings.cpm; }
+function flatOffer(product, offer) {
+  const meta = STORE_META[offer.store] || { distance: null, kind: "Online" };
+  return { pid: product.id, name: product.name, category: product.category, store: offer.store, price: offer.price, ship: offer.ship || 0, stock: offer.stock, distance: meta.distance, kind: meta.kind };
+}
+function allFlat() { const out = []; CATALOG.forEach(p => p.offers.forEach(o => out.push(flatOffer(p, o)))); return out; }
+function offersFor(pid) { const p = CATALOG.find(x => x.id === pid); return p ? p.offers.map(o => flatOffer(p, o)) : []; }
+function totalCost(o) { return o.price + o.ship + tripCost(o.distance); }
+function bestScore(o) { const stockBonus = o.stock === null || o.stock === undefined ? 0 : Math.min(o.stock, 10) * 0.15; return totalCost(o) - stockBonus; }
+function bestOffer(pid) { const os = offersFor(pid); if (!os.length) return null; return os.slice().sort((a, b) => bestScore(a) - bestScore(b))[0]; }
+function highestTotal(pid) { const os = offersFor(pid); return os.length ? Math.max.apply(null, os.map(totalCost)) : 0; }
+function findProductByName(name) { const n = String(name || "").trim().toLowerCase(); return CATALOG.find(p => p.name.toLowerCase() === n) || null; }
+function matchesQuery(product, q) {
+  if (!q) return true;
+  const hay = (product.name + " " + product.category).toLowerCase();
+  if (hay.includes(q)) return true;
+  return q.split(/\s+/).some(w => w.length > 2 && hay.includes(w));
+}
+function sortOffers(list, mode) {
+  const arr = list.slice();
+  if (mode === "total") arr.sort((a, b) => totalCost(a) - totalCost(b));
+  else if (mode === "distance") arr.sort((a, b) => (a.distance === null ? 999 : a.distance) - (b.distance === null ? 999 : b.distance) || totalCost(a) - totalCost(b));
+  else if (mode === "stock") arr.sort((a, b) => (b.stock === null ? -1 : b.stock) - (a.stock === null ? -1 : a.stock) || totalCost(a) - totalCost(b));
+  else arr.sort((a, b) => bestScore(a) - bestScore(b));
+  return arr;
+}
+
+/* ---------- COMPARE ---------- */
+function renderCompare() {
+  const q = $("query").value.trim().toLowerCase();
+  const mode = $("sort").value;
+  const products = CATALOG.filter(p => matchesQuery(p, q));
+  let offerCount = 0;
+  let html = "";
+  const groups = products.map(p => {
+    const offers = sortOffers(p.offers.map(o => flatOffer(p, o)).filter(o => settings.stores.includes(o.store)), mode);
+    return { p, offers };
+  }).filter(g => g.offers.length);
+  groups.sort((a, b) => bestScore(a.offers.slice().sort((x, y) => bestScore(x) - bestScore(y))[0]) - bestScore(b.offers.slice().sort((x, y) => bestScore(x) - bestScore(y))[0]));
+  groups.forEach(g => {
+    offerCount += g.offers.length;
+    const top = g.offers.slice().sort((a, b) => bestScore(a) - bestScore(b))[0];
+    html += '<div class="grouphead"><h3>' + esc(g.p.name) + '</h3><span class="cat">' + esc(g.p.category) + '</span></div>';
+    g.offers.forEach(o => {
+      const total = totalCost(o), trip = tripCost(o.distance), isTop = top && o.store === top.store;
+      html += '<article class="item' + (isTop ? " best" : "") + '"><div>'
+        + (isTop ? '<div class="bestlabel">TOP MATCH</div>' : '')
+        + '<div class="store">' + esc(o.store) + '</div>'
+        + '<div class="meta">' + esc(o.kind) + ' · ' + (o.distance === null ? "Online delivery" : o.distance + " miles away") + (o.kind === "In-store" ? " · Pickup available" : "") + '</div>'
+        + '<span class="pill sample">Sample</span> <span class="small">' + SAMPLE_TS + '</span><br>'
+        + (o.stock === null ? '<span class="pill">Stock not supplied (sample)</span>' : '<span class="pill ' + (o.stock <= 3 ? "warn" : "good") + '">' + o.stock + ' units (sample)' + (o.stock <= 3 ? " · LOW STOCK" : "") + '</span>')
+        + '<div class="actions">'
+        + '<button class="btn small" data-action="add" data-pid="' + o.pid + '" data-store="' + esc(o.store) + '">Add to List</button>'
+        + '<button class="btn ghost small" data-action="watch" data-pid="' + o.pid + '" data-store="' + esc(o.store) + '">Watch</button>'
+        + '<button class="btn ghost small" data-action="bought" data-pid="' + o.pid + '" data-store="' + esc(o.store) + '">Bought it</button>'
+        + '</div></div>'
+        + '<div><div class="price">' + money(o.price) + '</div>'
+        + '<div class="breakdown">Price <b>' + money(o.price) + '</b><br>+ Shipping <b>' + (o.ship ? money(o.ship) : "Free") + '</b><br>+ Trip <b>' + (o.distance === null ? "— (online)" : money(trip) + " (" + o.distance + " mi × " + money(settings.cpm) + "/mi)") + '</b></div>'
+        + '<div class="total">= ' + money(total) + ' total</div></div></article>';
+    });
+  });
+  $("resultTitle").textContent = q ? 'Results for "' + $("query").value.trim() + '"' : "All sample deals";
+  $("count").textContent = offerCount + " sample offers · " + groups.length + " products";
+  $("results").innerHTML = html || '<div class="empty">No sample matches. Try "headphones", "drill", "coffee", or a category like "gaming".</div>';
+}
+
+/* ---------- MY LIST ---------- */
+function storeTripOnce(store) { const m = STORE_META[store]; return m ? tripCost(m.distance) : 0; }
+function renderList() {
+  const body = $("listBody");
+  if (!myList.length) { body.innerHTML = '<div class="empty">Your list is empty. Add deals from Compare.</div>'; return; }
+  const byStore = {};
+  myList.forEach((it, idx) => { (byStore[it.store] = byStore[it.store] || []).push(Object.assign({ idx }, it)); });
+  let splitTotal = 0, html = "";
+  Object.keys(byStore).sort().forEach(store => {
+    const items = byStore[store];
+    const goods = items.reduce((s, it) => s + it.price + it.ship, 0);
+    const trip = items.length ? storeTripOnce(store) : 0;
+    const sub = goods + trip; splitTotal += sub;
+    html += '<div class="storegroup"><h3>' + esc(store) + '</h3>';
+    items.forEach(it => {
+      html += '<div class="rowline"><div><b>' + esc(it.name) + '</b><div class="small">Price ' + money(it.price) + (it.ship ? " + " + money(it.ship) + " shipping" : " · free shipping/pickup") + ' · Sample</div></div>'
+        + '<button class="btn warnbtn small" data-remove="' + it.idx + '">Remove</button></div>';
+    });
+    html += '<p class="small">Store subtotal: goods ' + money(goods) + ' + one trip ' + money(trip) + ' = <b style="color:var(--green)">' + money(sub) + '</b></p></div>';
+  });
+  /* cheapest single store that carries every product on the list */
+  const pids = Array.from(new Set(myList.map(i => i.pid).filter(Boolean)));
+  let single = null;
+  allStoreNames.forEach(store => {
+    let t = storeTripOnce(store), ok = true;
+    pids.forEach(pid => { const o = offersFor(pid).find(x => x.store === store); if (!o) ok = false; else t += o.price + o.ship; });
+    if (ok && pids.length && (single === null || t < single.total)) single = { store, total: t };
+  });
+  html += '<section class="panel" style="margin-top:18px"><h3 style="margin-top:0">Two ways to buy this list</h3>'
+    + '<p>Best deal per item (split stores, your picks): <b style="color:var(--green)">' + money(splitTotal) + '</b></p>';
+  if (single) {
+    const diff = single.total - splitTotal;
+    html += '<p>Cheapest single store — ' + esc(single.store) + ' for everything: <b>' + money(single.total) + '</b></p>'
+      + '<p><b>' + (diff >= 0 ? "Splitting stores saves you " + money(diff) : "The single store (" + esc(single.store) + ") would save you " + money(-diff)) + '</b> on sample prices.</p>';
+  } else {
+    html += '<p class="small">No single store in the sample catalog carries every product on this list, so splitting stores is the only option here.</p>';
+  }
+  html += '<p class="small">Trips are counted once per store. All prices are sample data.</p></section>';
+  body.innerHTML = html;
+  body.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", () => { myList.splice(Number(b.getAttribute("data-remove")), 1); saveJSON(LS.list, myList); renderList(); }));
+}
+
+/* ---------- WATCH ---------- */
+function renderWatchOptions(selected) {
+  $("watchProduct").innerHTML = CATALOG.map(p => '<option value="' + p.id + '"' + (p.id === selected ? " selected" : "") + '>' + esc(p.name) + '</option>').join("");
+}
+function renderWatch() {
+  const body = $("watchBody");
+  if (!watchList.length) { body.innerHTML = '<div class="empty">No watches yet. Pick a product above, set a target, and add it — or tap Watch on any deal.</div>'; return; }
+  body.innerHTML = watchList.map((w, i) => {
+    const best = bestOffer(w.pid); if (!best) return "";
+    const bt = totalCost(best), hit = bt <= w.target;
+    const p = CATALOG.find(x => x.id === w.pid);
+    return '<div class="rowline"><div><b>' + esc(p ? p.name : w.pid) + '</b>' + (hit ? ' <span class="hitlabel">HIT</span>' : '')
+      + '<div class="small">Best sample total: <b style="color:var(--green)">' + money(bt) + '</b> at ' + esc(best.store) + ' · Your target: ' + money(w.target) + ' · ' + SAMPLE_TS + '</div></div>'
+      + '<button class="btn warnbtn small" data-unwatch="' + i + '">Remove</button></div>';
+  }).join("");
+  body.querySelectorAll("[data-unwatch]").forEach(b => b.addEventListener("click", () => { watchList.splice(Number(b.getAttribute("data-unwatch")), 1); saveJSON(LS.watch, watchList); renderWatch(); }));
+}
+
+/* ---------- SAVINGS ---------- */
+function savedFor(entry) {
+  const p = entry.pid ? CATALOG.find(x => x.id === entry.pid) : findProductByName(entry.name);
+  if (!p) return 0;
+  return Math.max(0, highestTotal(p.id) - entry.paid);
+}
+function renderSavings() {
+  const spent = savings.reduce((s, e) => s + e.paid, 0);
+  const saved = savings.reduce((s, e) => s + savedFor(e), 0);
+  $("statCount").textContent = savings.length;
+  $("statSpent").textContent = money(spent);
+  $("statSaved").textContent = money(saved);
+  const body = $("savingsBody");
+  if (!savings.length) { body.innerHTML = '<div class="empty">No purchases logged yet. Tap "Bought it" on a deal, or log one above.</div>'; return; }
+  body.innerHTML = savings.map((e, i) => '<div class="rowline"><div><b>' + esc(e.name) + '</b><div class="small">' + esc(e.store) + ' · Paid ' + money(e.paid) + ' · Saved ' + money(savedFor(e)) + (e.date ? ' · ' + esc(e.date) : '') + '</div></div>'
+    + '<button class="btn warnbtn small" data-delbuy="' + i + '">Delete</button></div>').join("");
+  body.querySelectorAll("[data-delbuy]").forEach(b => b.addEventListener("click", () => { savings.splice(Number(b.getAttribute("data-delbuy")), 1); saveJSON(LS.savings, savings); renderSavings(); }));
+}
+
+/* ---------- SETTINGS ---------- */
+function renderSettings() {
+  $("setZip").value = settings.zip; $("zip").value = settings.zip;
+  $("setCpm").value = settings.cpm; $("setCpmNum").value = settings.cpm; $("cpmVal").textContent = money(settings.cpm);
+  $("storeChecks").innerHTML = allStoreNames.map(s => '<label class="checkrow"><input type="checkbox" data-store-check="' + esc(s) + '"' + (settings.stores.includes(s) ? " checked" : "") + '> ' + esc(s) + '</label>').join("");
+  $("storeChecks").querySelectorAll("[data-store-check]").forEach(cb => cb.addEventListener("change", () => {
+    const checked = Array.from($("storeChecks").querySelectorAll("[data-store-check]:checked")).map(x => x.getAttribute("data-store-check"));
+    settings.stores = checked.length ? checked : allStoreNames.slice();
+    saveJSON(LS.settings, settings); renderCompare();
+  }));
+}
+
+/* ---------- NAV / EVENTS ---------- */
+function switchTab(name) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.id === "tab-" + name));
+  document.querySelectorAll("[data-nav]").forEach(b => b.classList.toggle("active", b.getAttribute("data-nav") === name));
+  if (name === "list") renderList();
+  if (name === "watch") { renderWatchOptions($("watchProduct").value || CATALOG[0].id); renderWatch(); }
+  if (name === "savings") renderSavings();
+  if (name === "settings") renderSettings();
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll("[data-nav]").forEach(b => b.addEventListener("click", () => switchTab(b.getAttribute("data-nav"))));
+$("searchBtn").addEventListener("click", renderCompare);
+$("query").addEventListener("keydown", e => { if (e.key === "Enter") renderCompare(); });
+$("query").addEventListener("input", renderCompare);
+$("sort").addEventListener("change", renderCompare);
+$("zip").addEventListener("change", () => { settings.zip = $("zip").value.trim() || "08232"; saveJSON(LS.settings, settings); $("setZip").value = settings.zip; });
+$("results").addEventListener("click", e => {
+  const b = e.target.closest("[data-action]"); if (!b) return;
+  const pid = b.getAttribute("data-pid"), store = b.getAttribute("data-store");
+  const o = offersFor(pid).find(x => x.store === store); if (!o) return;
+  const action = b.getAttribute("data-action");
+  if (action === "add") {
+    if (!myList.some(i => i.pid === pid && i.store === store)) { myList.push({ pid, name: o.name, store, price: o.price, ship: o.ship }); saveJSON(LS.list, myList); }
+    b.textContent = "Added ✓"; setTimeout(renderCompare, 700);
+  } else if (action === "watch") {
+    switchTab("watch"); renderWatchOptions(pid);
+    $("watchTarget").value = totalCost(bestOffer(pid)).toFixed(2); $("watchTarget").focus();
+  } else if (action === "bought") {
+    savings.unshift({ pid, name: o.name, store, paid: Math.round(totalCost(o) * 100) / 100, date: new Date().toISOString().slice(0, 10) });
+    saveJSON(LS.savings, savings); switchTab("savings");
+  }
+});
+$("clearListBtn").addEventListener("click", () => { myList = []; saveJSON(LS.list, myList); renderList(); });
+$("addWatchBtn").addEventListener("click", () => {
+  const pid = $("watchProduct").value, target = parseFloat($("watchTarget").value);
+  if (!pid || isNaN(target) || target < 0) { alert("Pick a product and enter a target price."); return; }
+  watchList = watchList.filter(w => w.pid !== pid); watchList.push({ pid, target });
+  saveJSON(LS.watch, watchList); renderWatch();
+});
+$("addBuyBtn").addEventListener("click", () => {
+  const name = $("buyName").value.trim(), store = $("buyStore").value.trim(), paid = parseFloat($("buyPaid").value);
+  if (!name || !store || isNaN(paid) || paid < 0) { alert("Enter product, store, and price paid."); return; }
+  const p = findProductByName(name);
+  savings.unshift({ pid: p ? p.id : null, name, store, paid, date: new Date().toISOString().slice(0, 10) });
+  saveJSON(LS.savings, savings); $("buyName").value = ""; $("buyStore").value = ""; $("buyPaid").value = ""; renderSavings();
+});
+$("setZip").addEventListener("change", () => { settings.zip = $("setZip").value.trim() || "08232"; saveJSON(LS.settings, settings); $("zip").value = settings.zip; });
+function syncCpm(v) { settings.cpm = Math.max(0, Number(v) || 0); saveJSON(LS.settings, settings); $("setCpm").value = settings.cpm; $("setCpmNum").value = settings.cpm; $("cpmVal").textContent = money(settings.cpm); renderCompare(); }
+$("setCpm").addEventListener("input", () => syncCpm($("setCpm").value));
+$("setCpmNum").addEventListener("change", () => syncCpm($("setCpmNum").value));
+$("resetBtn").addEventListener("click", () => {
+  if (!confirm("Reset ALL ShopWise data (list, watches, purchases, settings) on this device?")) return;
+  Object.values(LS).forEach(k => localStorage.removeItem(k)); location.reload();
+});
+
+renderWatchOptions(CATALOG[0].id);
+renderSettings();
+renderCompare();
+renderList(); renderWatch(); renderSavings();
+if ("serviceWorker" in navigator) { navigator.serviceWorker.register("sw.js").catch(function () {}); }
+</script>
+</body>
+</html>
